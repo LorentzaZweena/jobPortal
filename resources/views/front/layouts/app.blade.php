@@ -32,10 +32,11 @@
 				</ul>				
 
 				@if (!Auth::check())
-					<a class="btn btn-outline-danger me-2" href="{{ route('account.login') }}" type="submit">Login</a>
-					@else
+					<a class="btn btn-outline-danger me-2" href="{{ route('login') }}" type="submit">Login</a>
+				@else
 					<a class="btn btn-outline-danger me-2" href="{{ route('account.profile') }}" type="submit">Account</a>
 				@endif
+
 				<a class="btn btn-danger" href="post-job.html" type="submit">Post a Job</a>
 			</div>
 		</div>
@@ -52,14 +53,15 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form id="profilePicForm" name="profilePicForm" method="POST" action="">
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Profile Image</label>
                 <input type="file" class="form-control" id="image"  name="image">
+				<p class="text-danger" id="image-error"></p>
             </div>
             <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary mx-3">Update</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger mx-3">Update</button>
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
             </div>
             
         </form>
@@ -84,6 +86,39 @@
 		headers: {
 			'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		}
+	});
+
+	$("#profilePicForm").submit(function(e) {
+		e.preventDefault();
+		var formData = new FormData(this);
+		$.ajax({
+			type: 'POST',
+			url: "{{ route('account.updateProfilePicture') }}",
+			data: formData,
+			dataType: 'json',
+			contentType: false,
+			processData: false,
+			success: function(response){
+    $("#image-error").html('');
+    
+    if (response.status == true || response.status == 'success') {
+        $("#exampleModal").modal('hide');
+        location.reload();
+    } else {
+        var errors = response.errors;
+        if (errors && errors.image) {
+            $("#image-error").html(errors.image[0]);
+        } else {
+			window.location.href = '{{ url()->current() }}';
+		}
+    }
+},
+		error: function(xhr, status, error) {
+			console.log('Error:', error);
+			$("#image-error").html('An error occurred while uploading the image.');
+		}
+
+		});
 	});
 </script>
 @yield('customJs')
