@@ -72,7 +72,64 @@ class AccountController extends Controller
     }
 
     public function profile(){
-        return view('front.account.profile');
+        $id = Auth::user()->id;
+        $user = User::where('id', $id)->first();
+        return view('front.account.profile', [
+            'user' => $user
+        ]);
+    }
+
+    public function updateProfile(Request $request){
+        $id = Auth::user()->id;
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|min:5|max:20',
+            'email' => 'required|email|unique:users,email, '.$id.', id',
+        ]);
+
+        if($validator->passes()){
+            $user = User::find($id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->mobile = $request->mobile;
+            $user->designation = $request->designation;
+            $user->save();
+
+            session()->flash('success', 'Profile updated successfully.');
+
+            return response()->json([
+                'status' => true,
+                'errors' => []
+            ]);
+
+            if ($request->password) {
+                $validatorPassword = Validator::make($request->all(), [
+                    'password' => 'required|min:5|same:confirm_password',
+                    'confirm_password' => 'required',
+                ]);
+
+                if ($validatorPassword->passes()) {
+                    $user->password = Hash::make($request->password);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'errors' => $validatorPassword->errors()
+                    ]);
+                }
+            }
+
+            $user->save();
+
+            session()->flash('success', 'Profile updated successfully.');
+            return response()->json([
+                'status' => true,
+                'errors' => []
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
     }
 
     public function logout(){
