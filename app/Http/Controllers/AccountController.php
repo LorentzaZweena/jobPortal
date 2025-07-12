@@ -226,6 +226,7 @@ class AccountController extends Controller
         $job->company_name = $request->company_name;            
         $job->company_location = $request->company_location;            
         $job->company_website = $request->website;
+        $job->user_id = Auth::user()->id;
         $job->save();            
         
         session()->flash('success', 'Job created successfully.');            
@@ -238,12 +239,14 @@ class AccountController extends Controller
             'status' => false,                
             'errors' => $validator->errors()            
         ]);        
-    }    
+    }  
 }
-
 
     public function myJobs()
     {
-        return view('front.account.job.my-jobs');
+        $jobs = Job::where('user_id', Auth::user()->id)->with('jobType')->paginate(2);
+        return view('front.account.job.my-jobs', [
+            'jobs' => $jobs
+        ]);
     }
 }

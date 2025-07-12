@@ -29,4 +29,14 @@ class Job extends Model
         'company_location',
         'company_website'
     ];
+
+    public function jobType()
+    {
+        return $this->belongsTo(JobType::class, 'job_type_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
