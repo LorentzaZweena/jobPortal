@@ -23,3 +23,5 @@ Route::middleware('auth')->group(function () {
     Route::post('/update-job/{jobId}', [AccountController::class, 'updateJob'])->name('account.updateJob');
     Route::post('/delete-job', [AccountController::class, 'deleteJob'])->name('account.deleteJob');
 });
+
+Route::get('/job/{id}', [HomeController::class, 'jobDetails'])->name('job.details');

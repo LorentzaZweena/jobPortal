@@ -24,8 +24,15 @@ class JobFactory extends Factory
             'vacancy' => rand(1, 5),
             'location' => fake()->city(),
             'description' => fake()->paragraph(),
+            'benefit' => fake()->paragraph(),
+            'responsibility' => fake()->paragraph(),
+            'qualifications' => fake()->paragraph(),
+            'keyword' => fake()->paragraph(),
             'experience' => fake()->numberBetween(1, 10) . ' years',
-            'company_name' => fake()->company()
+            'company_name' => fake()->company(),
+            'company_location' => fake()->city(),
+            'company_website' => fake()->paragraph(),
+            'isFeatured' => rand(0, 1)
         ];
     }
 }
