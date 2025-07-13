@@ -66,7 +66,7 @@
                                                         <ul class="dropdown-menu dropdown-menu-end">
                                                             <li><a class="dropdown-item" href="job-detail.html"> <i class="fa fa-eye" aria-hidden="true"></i> View</a></li>
                                                             <li><a class="dropdown-item" href="{{ route('account.editJob', $job->id) }}"><i class="fa fa-edit" aria-hidden="true"></i> Edit</a></li>
-                                                            <li><a class="dropdown-item" href="#"><i class="fa fa-trash" aria-hidden="true"></i> Remove</a></li>
+                                                            <li><a class="dropdown-item" href="#" onclick="deleteJob({{ $job->id }})"><i class="fa fa-trash" aria-hidden="true"></i> Remove</a></li>
                                                         </ul>
                                                     </div>
                                                 </td>
@@ -89,5 +89,44 @@
         </div>
     </div>
 </section>
+@endsection
+
+@section('customJs')
+<script type="text/javascript">
+    function deleteJob(jobId) {
+    if(confirm("Are you sure you want to delete this job?")) {
+        $.ajax({
+            url: '{{ route("account.deleteJob") }}',
+            type: 'POST',
+            data: {jobId: jobId},
+            dataType: 'json',
+            success: function(response) {
+                if(response.status == true) {
+                    $('.card-body.card-form').prepend(`
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            ${response.message || 'Job deleted successfully.'}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    `);
+
+                    $('tr').has(`a[onclick="deleteJob(${jobId})"]`).remove();
+                    if($('tbody tr').length === 0) {
+                        $('tbody').html('<tr><td colspan="5" class="text-center">No jobs found</td></tr>');
+                    }
+                }
+            },
+            error: function() {
+                $('.card-body.card-form').prepend(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Something went wrong. Please try again.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `);
+            }
+        });
+    }
+}
+
+</script>
 @endsection
 

@@ -314,6 +314,27 @@ class AccountController extends Controller
             'status' => false,                
             'errors' => $validator->errors()            
         ]);        
-    }  
-}
+    } 
+
+    }
+
+    public function deleteJob(Request $request){
+        $job = Job::where([
+            'user_id' => Auth::user()->id,
+            'id' => $request->jobId
+        ])->first();
+
+        if($job == null){
+            session()->flash('error', 'Job not found or unauthorized access.');
+            return response()->json([
+                'status' => true,
+            ]);
+        }
+
+        Job::where('id', $request->jobId)->delete();
+        session()->flash('success', 'Job deleted successfully.');
+            return response()->json([
+                'status' => true,
+            ]);
+    }
 }
