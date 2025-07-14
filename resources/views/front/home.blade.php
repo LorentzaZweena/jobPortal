@@ -93,7 +93,7 @@
                                                 @endif
                                             </div>
                                             <div class="d-grid mt-3">
-                                                <a href="{{ route('job.details', $featuredJob->id) }}" class="btn btn-danger btn-lg">Details</a>
+                                                <a href="{{ route('job.details', $featuredJob->id) }}" class="btn btn-outline-danger btn-lg">Details</a>
                                             </div>
                                         </div>
                                     </div>
@@ -138,7 +138,7 @@
                                                 @endif
                                             </div>
                                             <div class="d-grid mt-3">
-                                                <a href="{{ route('job.details', $latestJob->id) }}" class="btn btn-danger btn-lg">Details</a>
+                                                <a href="{{ route('job.details', $latestJob->id) }}" class="btn btn-outline-danger btn-lg">Details</a>
                                             </div>
                                         </div>
                                     </div>
