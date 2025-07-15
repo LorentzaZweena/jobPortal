@@ -13,10 +13,8 @@ class JobsController extends Controller
     {
         $categories = Category::where('status', 1)->get();
         $jobTypes = JobType::where('status', 1)->get();
+        $jobs = Job::query();
 
-        $jobs = Job::where('status', 1);
-
-        //Search using keyword, location and category
         if (!empty($request->keyword)) {
             $jobs = $jobs->where(function($query) use ($request) {
                 $query->orWhere('title', 'LIKE', '%' . $request->keyword . '%');
@@ -32,8 +30,9 @@ class JobsController extends Controller
             $jobs = $jobs->where('category_id', $request->category);
         }
 
-        if (!empty($request->jobType)) {
-            $jobTypeArray = explode(',', $request->jobType);
+        $jobTypeArray = [];
+        if (!empty($request->job_type)) {
+            $jobTypeArray = $request->job_type;
             $jobs = $jobs->whereIn('job_type_id', $jobTypeArray);
         }
 
@@ -41,12 +40,20 @@ class JobsController extends Controller
             $jobs = $jobs->where('experience', 'LIKE', '%' . $request->experience . '%');
         }
 
+        $jobs = $jobs->with(['jobType', 'category']);
+            if ($request->sort == 'oldest') {
+                $jobs = $jobs->orderBy('created_at', 'ASC');
+            } else {
+                $jobs = $jobs->orderBy('created_at', 'DESC');
+            }
 
-        $jobs = $jobs->with(['jobType', 'category'])->orderBy('created_at','DESC')->paginate(6);
+        $jobs = $jobs->paginate(6);
+
         return view('front.jobs', [
             'categories' => $categories,
             'jobTypes' => $jobTypes,
-            'jobs' => $jobs
+            'jobs' => $jobs,
+            'jobTypeArray' => $jobTypeArray
         ]);
     }
 }
