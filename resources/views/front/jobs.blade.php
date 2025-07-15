@@ -9,10 +9,10 @@
             </div>
             <div class="col-6 col-md-2">
                 <div class="align-end">
-                    <select name="sort" id="sort" class="form-control">
+                    {{-- <select name="sort" id="sort" class="form-control">
                         <option value="latest" {{ (Request::get('sort') == 'latest' || !Request::get('sort')) ? 'selected' : '' }}>Latest</option>
                         <option value="oldest" {{ Request::get('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
-                    </select>
+                    </select> --}}
 
                 </div>
             </div>
