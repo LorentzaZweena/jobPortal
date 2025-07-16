@@ -7,6 +7,7 @@ use App\Http\Controllers\JobsController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/jobs', [JobsController::class, 'index'])->name('jobs');
+Route::get('/jobs/detail/{id}', [JobsController::class, 'detail'])->name('jobDetail');
 Route::get('/account/register', [AccountController::class, 'register'])->name('account.register');
 Route::post('/account/process-register', [AccountController::class, 'processRegister'])->name('account.processRegister');
 Route::get('/account/login', [AccountController::class, 'login'])->name('account.login');

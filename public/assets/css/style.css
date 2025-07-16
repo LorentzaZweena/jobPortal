@@ -9415,16 +9415,16 @@ header .navbar-brand {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
-  color: #0ed300;
+  color: red;
   font-size: 14px;
   line-height: 40px;
   text-align: center;
   display: inline-block;
-  background: #EFFDF5;
+  background: white;
   margin-right: 15px;
 }
 .section-3 .job_listing_area .job_lists .single_jobs .jobs_right .apply_now a.heart_mark:hover {
-  background: #00D363;
+  background: red;
   color: #fff;
 }
 .section-4 .job_details_area .job_sumary .summery_header {
@@ -9556,15 +9556,15 @@ header .navbar-brand {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
-  color: #00D363;
+  color: red;
   font-size: 14px;
   line-height: 40px;
   text-align: center;
   display: inline-block;
-  background: #EFFDF5;
+  background: pink;
 }
 .section-4 .job_details_area .single_jobs .jobs_right .apply_now a.heart_mark:hover {
-  background: #00D363;
+  background: red;
   color: #fff;
 }
 label .req {
