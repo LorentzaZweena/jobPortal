@@ -28,3 +28,4 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/job/{id}', [HomeController::class, 'jobDetails'])->name('job.details');
+Route::post('/apply-job', [JobsController::class, 'applyJob'])->name('applyJob');
