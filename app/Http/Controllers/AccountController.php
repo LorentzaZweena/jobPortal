@@ -7,11 +7,12 @@ use App\Models\User;
 use App\Models\JobType;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Models\JobApplication;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Hash;
 
+use Illuminate\Support\Facades\Hash;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -336,5 +337,34 @@ class AccountController extends Controller
             return response()->json([
                 'status' => true,
             ]);
+    }
+
+    public function myJobApplications(){
+        $jobApplications = JobApplication::where('user_id', Auth::user()->id)
+                            ->with('job','job.jobType', 'job.applications')
+                            ->paginate(5);
+        return view('front.account.job.my-job-applications', [
+            'jobApplications' => $jobApplications
+        ]);
+    }
+
+    public function removeJobs(Request $request){
+        $jobApplication = JobApplication::where([
+            'id' => $request->id, 
+            'user_id' => Auth::user()->id]
+        )->first();
+        
+        if($jobApplication == null){
+            session()->flash('error', 'Job application not found.');
+            return response()->json([
+                'status' => false,
+            ]);
+        }
+
+        JobApplication::find($request->id)->delete();
+        session()->flash('success', 'Job application removed successfully.');
+        return response()->json([
+            'status' => true,
+        ]);
     }
 }
