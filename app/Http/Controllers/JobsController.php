@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\JobApplication;
 use App\Mail\JobNotificationEmail;
 use App\Http\Controllers\Controller;
+use App\Models\SavedJob;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -131,6 +132,40 @@ class JobsController extends Controller
     return response()->json([
         'status' => true,
         'message' => 'Job applied successfully!'
+    ]);
+}
+
+public function saveJob(Request $request){
+    $id = $request->id;
+    $job = Job::find($id);
+
+    if ($job == null) {
+        session()->flash('error', 'Job not found');
+        return response()->json([
+            'status' => false
+        ]);
+    }
+
+    $count = SavedJob::where([
+        'job_id' => $id,
+        'user_id' => Auth::user()->id
+    ])->count();
+
+    if ($count > 0) {
+        session()->flash('error', 'Job already saved');
+        return response()->json([
+            'status' => false
+        ]);
+    }
+
+    $savedJob = new SavedJob();
+    $savedJob->job_id = $id;
+    $savedJob->user_id = Auth::user()->id;
+    $savedJob->save();
+
+    session()->flash('success', 'Job saved successfully');
+    return response()->json([
+        'status' => true
     ]);
 }
 

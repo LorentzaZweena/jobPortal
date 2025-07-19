@@ -72,7 +72,12 @@
                         
                         <div class="border-bottom"></div>
                         <div class="pt-3 text-end">
-                            <a href="#" class="btn btn-danger">Save</a>
+                            @if (Auth::check())
+                                <a href="#" onclick="saveJob({{ $job->id }});" class="btn btn-danger">Save</a>
+                            @else
+                                <a href="{{ route('account.login') }}" class="btn btn-outline-danger">Login to save</a>
+                            @endif
+
                             @if (Auth::check())
                                 <button type="button" onclick="applyJob({{ $job->id }})" class="btn btn-outline-danger">Apply Now</button>
                             @else
@@ -150,6 +155,48 @@ function applyJob(id) {
                 $('html, body').animate({scrollTop: 0}, 500);
                 if(response.status) {
                     $('button[onclick*="applyJob"]').prop('disabled', true).text('Applied');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', xhr.responseText);
+                $('.alert').remove();
+                let alertHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Something went wrong. Please try again.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                $('.job_details_header').before(alertHtml);
+                $('html, body').animate({scrollTop: 0}, 500);
+            }
+        });
+    }
+}
+
+function saveJob(id) {
+    if(confirm('Are you sure you want to apply for this job?')) {
+        $.ajax({
+            url: '{{ route("saveJob") }}',
+            type: 'POST',
+            data: {
+                id: id,
+                _token: '{{ csrf_token() }}'
+            },
+            dataType: 'json',
+            success: function(response) {
+                $('.alert').remove();
+                let alertClass = response.status ? 'alert-success' : 'alert-danger';
+                let alertHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show mb-5" role="alert">
+                        ${response.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+            
+                $('.job_details_header').before(alertHtml);
+                $('html, body').animate({scrollTop: 0}, 500);
+                if(response.status) {
+                    $('button[onclick*="saveJob"]').prop('disabled', true).text('Applied');
                 }
             },
             error: function(xhr, status, error) {
