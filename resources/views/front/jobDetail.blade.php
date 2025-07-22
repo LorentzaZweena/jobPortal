@@ -35,8 +35,8 @@
                                 </div>
                             </div>
                             <div class="jobs_right">
-                                <div class="apply_now">
-                                    <a class="heart_mark" href="#"> <i class="fa fa-heart-o" aria-hidden="true"></i></a>
+                                <div class="apply_now {{ ($count == 1) ? 'save-job' : '' }}">
+                                    <a class="heart_mark" href="javascript:void(0);" onclick="saveJob({{ $job->id }})"> <i class="fa fa-heart-o" aria-hidden="true"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -73,7 +73,7 @@
                         <div class="border-bottom"></div>
                         <div class="pt-3 text-end">
                             @if (Auth::check())
-                                <a href="#" onclick="saveJob({{ $job->id }});" class="btn btn-danger">Save</a>
+                                <button onclick="saveJob({{ $job->id }});" class="btn btn-danger">Save</button>
                             @else
                                 <a href="{{ route('account.login') }}" class="btn btn-outline-danger">Login to save</a>
                             @endif
@@ -154,7 +154,7 @@ function applyJob(id) {
                 $('.job_details_header').before(alertHtml);
                 $('html, body').animate({scrollTop: 0}, 500);
                 if(response.status) {
-                    $('button[onclick*="applyJob"]').prop('disabled', true).text('Applied');
+                    $('a[onclick*="applyJob"]').prop('disabled', true).text('Applied');
                 }
             },
             error: function(xhr, status, error) {
@@ -174,7 +174,7 @@ function applyJob(id) {
 }
 
 function saveJob(id) {
-    if(confirm('Are you sure you want to apply for this job?')) {
+    if(confirm('Are you sure you want to save for this job?')) {
         $.ajax({
             url: '{{ route("saveJob") }}',
             type: 'POST',
@@ -196,7 +196,7 @@ function saveJob(id) {
                 $('.job_details_header').before(alertHtml);
                 $('html, body').animate({scrollTop: 0}, 500);
                 if(response.status) {
-                    $('button[onclick*="saveJob"]').prop('disabled', true).text('Applied');
+                    $('button[onclick*="saveJob"]').prop('disabled', true).text('Saved');
                 }
             },
             error: function(xhr, status, error) {
@@ -214,6 +214,7 @@ function saveJob(id) {
         });
     }
 }
+
 </script>
 @endsection
 

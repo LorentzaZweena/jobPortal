@@ -48,11 +48,13 @@ class JobsController extends Controller
         }
 
         $jobs = $jobs->with(['jobType', 'category']);
-            if ($request->sort == 'oldest') {
-                $jobs = $jobs->orderBy('created_at', 'ASC');
-            } else {
-                $jobs = $jobs->orderBy('created_at', 'DESC');
-            }
+        if ($request->sort == 'oldest') {
+            $jobs = $jobs->orderBy('created_at', 'ASC');
+        } elseif ($request->sort == 'newest') {
+            $jobs = $jobs->orderBy('created_at', 'DESC');
+        } else {
+            $jobs = $jobs->inRandomOrder();
+        }
 
         $jobs = $jobs->paginate(6);
 
@@ -65,16 +67,26 @@ class JobsController extends Controller
     }
 
     public function detail($id){
-        $job = Job::where([
-            'id'=> $id,
-            'status' => 1
-        ])->with(['jobType', 'category'])->first();
+    $job = Job::where([
+        'id'=> $id,
+        'status' => 1
+    ])->with(['jobType', 'category'])->first();
 
-        if ($job == null) {
-            abort(404);
-        }
-        return view('front.jobDetail', ['job' => $job]);
+    if ($job == null) {
+        abort(404);
     }
+
+    $count = 0;
+    if (Auth::check()) {
+        $count = SavedJob::where([
+            'job_id' => $id,
+            'user_id' => Auth::user()->id
+        ])->count();
+    }
+
+    return view('front.jobDetail', ['job' => $job, 'count' => $count]);
+}
+
 
     public function applyJob(Request $request){
     if (!Auth::check()) {
@@ -140,9 +152,9 @@ public function saveJob(Request $request){
     $job = Job::find($id);
 
     if ($job == null) {
-        session()->flash('error', 'Job not found');
         return response()->json([
-            'status' => false
+            'status' => false,
+            'message' => 'Job not found'
         ]);
     }
 
@@ -152,9 +164,9 @@ public function saveJob(Request $request){
     ])->count();
 
     if ($count > 0) {
-        session()->flash('error', 'Job already saved');
         return response()->json([
-            'status' => false
+            'status' => false,
+            'message' => 'Job already saved'
         ]);
     }
 
@@ -163,11 +175,12 @@ public function saveJob(Request $request){
     $savedJob->user_id = Auth::user()->id;
     $savedJob->save();
 
-    session()->flash('success', 'Job saved successfully');
     return response()->json([
-        'status' => true
+        'status' => true,
+        'message' => 'Job saved successfully'
     ]);
 }
+
 
 
 }
