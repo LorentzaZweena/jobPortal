@@ -93,23 +93,15 @@ class AccountController extends Controller
         $id = Auth::user()->id;
         $validator = Validator::make($request->all(), [
             'name' => 'required|min:5|max:20',
-            'email' => 'required|email|unique:users,email, '.$id.', id',
+            // 'email' => 'email|unique:users,email, '.$id.', id',
         ]);
 
         if($validator->passes()){
             $user = User::find($id);
             $user->name = $request->name;
-            $user->email = $request->email;
+            // $user->email = $request->email;
             $user->mobile = $request->mobile;
             $user->designation = $request->designation;
-            $user->save();
-
-            session()->flash('success', 'Profile updated successfully.');
-
-            return response()->json([
-                'status' => true,
-                'errors' => []
-            ]);
 
             if ($request->password) {
                 $validatorPassword = Validator::make($request->all(), [
@@ -117,19 +109,20 @@ class AccountController extends Controller
                     'confirm_password' => 'required',
                 ]);
 
-                if ($validatorPassword->passes()) {
-                    $user->password = Hash::make($request->password);
-                } else {
+                if ($validatorPassword->fails()) {
                     return response()->json([
                         'status' => false,
                         'errors' => $validatorPassword->errors()
                     ]);
                 }
+
+                $user->password = Hash::make($request->password);
             }
 
             $user->save();
 
             session()->flash('success', 'Profile updated successfully.');
+
             return response()->json([
                 'status' => true,
                 'errors' => []
@@ -398,5 +391,36 @@ class AccountController extends Controller
         return response()->json([
             'status' => true,
         ]);
+    }
+
+    public function updatePassword(Request $request){
+        $validator = Validator::make($request->all(), [
+            'old_password' => 'required',
+            'new_password' => 'required|min:5',
+            'confirm_password' => 'required|same:new_password',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        if(Hash::check($request->old_password, Auth::user()->password) == false){
+            session()->flash('error', 'Your old password is incorrect');
+            return response()->json([
+                'status' => true,
+            ]);
+        }
+
+        $user = User::find(Auth::user()->id);
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        session()->flash('success', 'Password updated successfully');
+            return response()->json([
+                'status' => true,
+            ]);
     }
 }
