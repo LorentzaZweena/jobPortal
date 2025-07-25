@@ -221,7 +221,7 @@ function applyJob(id) {
 function saveJob(id) {
     if(confirm('Are you sure you want to save for this job?')) {
         $.ajax({
-            url: '{{ route("saveJob") }}',
+            url: '{{ route("account.saveJob") }}', 
             type: 'POST',
             data: {
                 id: id,
