@@ -45,4 +45,44 @@ class Job extends Model
     {
         return $this->hasMany(JobApplication::class, 'job_id');
     }
+
+    public function getExperienceFormattedAttribute()
+    {
+        if ($this->experience === '8_plus') {
+            return '8+ years';
+        }
+
+        if ($this->experience == 1) {
+            return '1 year';
+        }
+
+        if ($this->experience == 2) {
+            return '2 years';
+        }
+
+        if ($this->experience == 3) {
+            return '3 years';
+        }
+
+        if ($this->experience == 4) {
+            return '4 years';
+        }
+
+        if ($this->experience == 5) {
+            return '5 years';
+        }
+
+        if ($this->experience == 6) {
+            return '6 years';
+        }
+
+        if ($this->experience == 7) {
+            return '7 years';
+        }
+        if ($this->experience == 0 || $this->experience === '0') {
+            return 'No experience';
+        }
+
+        return $this->experience;
+    }
 }

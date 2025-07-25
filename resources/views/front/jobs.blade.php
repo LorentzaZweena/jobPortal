@@ -98,7 +98,7 @@
                                             <span class="fw-bolder"><i class="fa fa-clock-o"></i></span>
                                             <span class="ps-1">{{ $job->jobType->name }}</span>
                                         </p>
-                                        <p><i class="fa fa-briefcase"></i>&nbsp;&nbsp;{{ $job->experience }}</p>
+                                        <p><i class="fa fa-briefcase"></i>&nbsp;&nbsp;{{ $job->experience_formatted }}</p>
                                         @if (!is_null($job->salary))
                                             <p class="mb-0">
                                             <span class="fw-bolder"><i class="fa fa-usd"></i></span>

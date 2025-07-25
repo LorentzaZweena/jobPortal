@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\AccountController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobsController;
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\admin\DashboardController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/jobs', [JobsController::class, 'index'])->name('jobs');
@@ -34,3 +35,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/job/{id}', [HomeController::class, 'jobDetails'])->name('job.details');
 Route::post('/apply-job', [JobsController::class, 'applyJob'])->name('applyJob');
+
+Route::middleware('auth')->prefix('admin')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+});
