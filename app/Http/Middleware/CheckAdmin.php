@@ -15,6 +15,10 @@ class CheckAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if($request->user() === null) {
+            return redirect()->route('home')->with('error', 'You must be logged in to access this page.');
+        }
+
         if($request->user()->role != 'admin') {
             session()->flash('error', 'Who do you think you are? You are not an admin!');
             return redirect()->route('account.profile');
