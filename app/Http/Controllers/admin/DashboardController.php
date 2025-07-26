@@ -11,7 +11,7 @@ class DashboardController extends Controller
     public function index()
     {
         if (Auth::user()->role !== 'admin') {
-            abort(403, 'Unauthorized access to admin dashboard.');
+            abort(403, 'What are you doing?');
         }
 
         return view('admin.dashboard');
