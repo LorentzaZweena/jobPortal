@@ -36,7 +36,7 @@
                                         <th scope="col">No</th>
                                         <th scope="col">Name</th>
                                         <th scope="col">Email</th>
-                                        <th scope="col">Mobile</th>
+                                        <th scope="col">Role</th>
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>
@@ -49,7 +49,7 @@
                                                     <div class="job-name fw-500">{{ $user->name }}</div>
                                                 </td>
                                                 <td>{{ $user->email }}</td>
-                                                <td>{{ $user->mobile }}</td>
+                                                <td>{{ $user->role }}</td>
                                                 <td>
                                                     <div class="action-dots">
                                                         <button href="#" class="btn" data-bs-toggle="dropdown" aria-expanded="false">
@@ -57,7 +57,7 @@
                                                         </button>
                                                         <ul class="dropdown-menu dropdown-menu-end">
                                                             <li><a class="dropdown-item" href="{{ route("admin.users.edit", $user->id) }}"><i class="fa fa-edit" aria-hidden="true"></i> Edit</a></li>
-                                                            <li><a class="dropdown-item" href="#"><i class="fa fa-trash" aria-hidden="true"></i> Remove</a></li>
+                                                            <li><a class="dropdown-item" href="#" onclick="deleteUser({{ $user->id }})"><i class="fa fa-trash" aria-hidden="true"></i> Remove</a></li>
                                                         </ul>
                                                     </div>
                                                 </td>
@@ -65,7 +65,7 @@
                                         @endforeach    
                                     @else
                                         <tr>
-                                            <td colspan="5" class="text-center">No jobs found</td>
+                                            <td colspan="5" class="text-center">No users found</td>
                                         </tr>
                                     @endif
                                 </tbody>         
@@ -81,4 +81,59 @@
     </div>
 </section>
 @endsection
+@section('customJs')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript">
+    function deleteUser(id){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("admin.users.destroy") }}',
+                    type: 'DELETE',
+                    data: {
+                        id: id,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    dataType: 'json',
+                    success: function(response){
+                        if(response.status){
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'User deleted successfully.',
+                                icon: 'info',
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'User could not be deleted.',
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Something went wrong.',
+                            icon: 'error'
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>
+@endsection
+
 

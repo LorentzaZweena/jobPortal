@@ -10039,3 +10039,13 @@ footer .nav-link {
   align-items: center;
   display: flex;
 }
+
+.swal2-title {
+    position: relative;
+    border: none !important;
+}
+
+.swal2-title::before,
+.swal2-title::after {
+    all: unset !important;
+}
