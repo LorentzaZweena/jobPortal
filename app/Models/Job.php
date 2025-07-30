@@ -46,6 +46,11 @@ class Job extends Model
         return $this->hasMany(JobApplication::class, 'job_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function getExperienceFormattedAttribute()
     {
         if ($this->experience === '8_plus') {
