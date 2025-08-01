@@ -20,8 +20,9 @@
             <div class="col-lg-9">
                 @include('front.message')
                     <div class="card-body card-form">
-                        <form method="POST" id="editJobForm" name="editJobForm" action="{{ route('account.saveJob') }}">
-                    @csrf
+                        <form method="POST" id="editJobForm" name="editJobForm" action="{{ route('admin.jobs.update', $job->id) }}">
+                        @csrf
+                        @method('PUT')
                     <div class="card border-0 shadow">
                         <div class="card-body card-form p-4">
                             <h3 class="fs-4 mb-1">Edit job Details</h3>
@@ -75,6 +76,31 @@
                                     <label for="" class="mb-2">Location<span class="req">*</span></label>
                                     <input value="{{ $job->location }}" type="text" placeholder="location" id="location" name="location" class="form-control">
                                     <p></p>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="mb-4 col-md-6">
+                                    <div class="form-check">
+                                        <input {{ ($job->isFeatured == 1) ? 'checked' : '' }} class="form-check-input" type="checkbox" value="1" id="isFeatured" name="isFeatured">
+                                        <label class="form-check-label" for="isfeatured">
+                                            Featured
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="mb-4 col-md-6">
+                                    <div class="form-check-inline">
+                                        <input {{ ($job->status == 1) ? 'checked' : '' }} class="form-check-input" type="radio" value="1" id="status-active" name="status">
+                                        <label class="form-check-label" for="status">
+                                            Active
+                                        </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <input {{ ($job->status == 0) ? 'checked' : '' }} class="form-check-input" type="radio" value="0" id="status-block" name="status">
+                                        <label class="form-check-label" for="status">
+                                            Inactive
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
@@ -154,7 +180,7 @@
         e.preventDefault();
         $("button[type='submit']").prop('disabled', true);
         $.ajax({
-            url: '{{ route("account.updateJob", $job->id) }}',
+            url: '{{ route("admin.jobs.update", $job->id) }}',
             type: 'post',
             dataType: 'json',
             data: $("#editJobForm").serializeArray(),
