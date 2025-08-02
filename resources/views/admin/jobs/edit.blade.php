@@ -81,6 +81,7 @@
 
                             <div class="row">
                                 <div class="mb-4 col-md-6">
+                                    <label for="" class="mb-2">Is it featured?</label>
                                     <div class="form-check">
                                         <input {{ ($job->isFeatured == 1) ? 'checked' : '' }} class="form-check-input" type="checkbox" value="1" id="isFeatured" name="isFeatured">
                                         <label class="form-check-label" for="isfeatured">
@@ -89,19 +90,21 @@
                                     </div>
                                 </div>
                                 <div class="mb-4 col-md-6">
+                                    <label class="form-label d-block mb-2">Status</label>
                                     <div class="form-check-inline">
                                         <input {{ ($job->status == 1) ? 'checked' : '' }} class="form-check-input" type="radio" value="1" id="status-active" name="status">
-                                        <label class="form-check-label" for="status">
+                                        <label class="form-check-label" for="status-active">
                                             Active
                                         </label>
                                     </div>
                                     <div class="form-check-inline">
                                         <input {{ ($job->status == 0) ? 'checked' : '' }} class="form-check-input" type="radio" value="0" id="status-block" name="status">
-                                        <label class="form-check-label" for="status">
+                                        <label class="form-check-label" for="status-block">
                                             Inactive
                                         </label>
                                     </div>
                                 </div>
+
                             </div>
 
                             <div class="mb-4">

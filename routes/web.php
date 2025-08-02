@@ -7,6 +7,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\admin\JobController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\JobApplicationController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/jobs', [JobsController::class, 'index'])->name('jobs');
@@ -48,4 +49,5 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/jobs/edit/{id}', [JobController::class, 'edit'])->name('admin.jobs.edit');
     Route::put('/jobs/{id}', [JobController::class, 'update'])->name('admin.jobs.update');
     Route::delete('/jobs', [JobController::class, 'destroy'])->name('admin.jobs.destroy');
+    Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('admin.jobApplications');
 });
