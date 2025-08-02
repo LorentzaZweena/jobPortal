@@ -67,7 +67,7 @@
                                                         </button>
                                                         <ul class="dropdown-menu dropdown-menu-end">
                                                             <li><a class="dropdown-item" href="{{ route('admin.jobs.edit', $job->id) }}"><i class="fa fa-edit" aria-hidden="true"></i> Edit</a></li>
-                                                            <li><a class="dropdown-item" href="javascript:void(0);"><i class="fa fa-trash" aria-hidden="true"></i> Remove</a></li>
+                                                            <li><a class="dropdown-item" onclick="deleteJob({{ $job->id }})" href="javascript:void(0);"><i class="fa fa-trash" aria-hidden="true"></i> Remove</a></li>
                                                         </ul>
                                                     </div>
                                                 </td>
@@ -91,7 +91,7 @@
 @section('customJs')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
-    function deleteUser(id){
+    function deleteJob(id){
         Swal.fire({
             title: 'Are you sure?',
             text: "This action cannot be undone.",
@@ -103,7 +103,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '{{ route("admin.users.destroy") }}',
+                    url: '{{ route("admin.jobs.destroy") }}',
                     type: 'DELETE',
                     data: {
                         id: id,
@@ -114,7 +114,7 @@
                         if(response.status){
                             Swal.fire({
                                 title: 'Deleted',
-                                text: 'User deleted successfully.',
+                                text: 'Job deleted successfully.',
                                 icon: 'info',
                                 showConfirmButton: false,
                                 timer: 2000
@@ -124,7 +124,7 @@
                         } else {
                             Swal.fire({
                                 title: 'Error',
-                                text: 'User could not be deleted.',
+                                text: 'Job could not be deleted.',
                                 icon: 'error'
                             });
                         }
