@@ -50,4 +50,5 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::put('/jobs/{id}', [JobController::class, 'update'])->name('admin.jobs.update');
     Route::delete('/jobs', [JobController::class, 'destroy'])->name('admin.jobs.destroy');
     Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('admin.jobApplications');
+    Route::delete('/job-applications', [JobApplicationController::class, 'destroy'])->name('admin.jobApplications.destroy');
 });

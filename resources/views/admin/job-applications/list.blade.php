@@ -93,55 +93,55 @@
 @section('customJs')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
-    // function deleteJob(id){
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: "This action cannot be undone.",
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#d33',
-    //         cancelButtonColor: '#3085d6',
-    //         confirmButtonText: 'Yes, delete it!'
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             $.ajax({
-    //                 url: '{{ route("admin.jobs.destroy") }}',
-    //                 type: 'DELETE',
-    //                 data: {
-    //                     id: id,
-    //                     _token: '{{ csrf_token() }}'
-    //                 },
-    //                 dataType: 'json',
-    //                 success: function(response){
-    //                     if(response.status){
-    //                         Swal.fire({
-    //                             title: 'Deleted',
-    //                             text: 'Job deleted successfully.',
-    //                             icon: 'info',
-    //                             showConfirmButton: false,
-    //                             timer: 2000
-    //                         }).then(() => {
-    //                             window.location.reload();
-    //                         });
-    //                     } else {
-    //                         Swal.fire({
-    //                             title: 'Error',
-    //                             text: 'Job could not be deleted.',
-    //                             icon: 'error'
-    //                         });
-    //                     }
-    //                 },
-    //                 error: function() {
-    //                     Swal.fire({
-    //                         title: 'Error',
-    //                         text: 'Something went wrong.',
-    //                         icon: 'error'
-    //                     });
-    //                 }
-    //             });
-    //         }
-    //     });
-    // }
+    function deleteJobApplication(id){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '{{ route("admin.jobApplications.destroy") }}',
+                    type: 'DELETE',
+                    data: {
+                        id: id,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    dataType: 'json',
+                    success: function(response){
+                        if(response.status){
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'Job application deleted successfully.',
+                                icon: 'info',
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'Job application could not be deleted.',
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Something went wrong.',
+                            icon: 'error'
+                        });
+                    }
+                });
+            }
+        });
+    }
 </script>
 @endsection
 
