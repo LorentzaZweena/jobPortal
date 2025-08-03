@@ -6,14 +6,18 @@ use App\Models\Job;
 use App\Models\User;
 use App\Models\JobType;
 use App\Models\Category;
+use App\Models\SavedJob;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\JobApplication;
+use App\Mail\ResetPasswordEmail;
+
 use App\Http\Controllers\Controller;
-use App\Models\SavedJob;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -422,5 +426,84 @@ class AccountController extends Controller
             return response()->json([
                 'status' => true,
             ]);
+    }
+
+    public function forgotPassword()
+    {
+        return view('front.account.forgot-password');
+    }
+
+    public function processForgotPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('account.forgotPassword')
+                            ->withInput()
+                            ->withErrors($validator);
+        }
+
+        $token = Str::random(10);
+        \DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        \DB::table('password_reset_tokens')->insert([
+            'email' => $request->email,
+            'token' => $token,
+            'created_at' => now(),
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        $mailData = [
+            'token' => $token,
+            'user' => $user,
+            'subject' => 'Reset Password Request'
+        ];
+        Mail::to($request->email)->send(new ResetPasswordEmail($mailData));
+        return redirect()->route('account.forgotPassword')->with('success', 'Password reset link sent to your email.');
+    }
+
+    public function resetPassword($token)
+    {
+        return view('front.account.reset-password', ['token' => $token]);
+    }
+
+    public function processResetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'token' => 'required',
+            'password' => 'required|min:5|same:password_confirmation',
+            'password_confirmation' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return redirect()->back()
+                            ->withInput()
+                            ->withErrors($validator);
+        }
+
+        $tokenData = \DB::table('password_reset_tokens')
+                    ->where('token', $request->token)
+                    ->first();
+
+        if (!$tokenData) {
+            return redirect()->route('account.forgotPassword')->with('error', 'Invalid token.');
+        }
+
+        $user = User::where('email', $tokenData->email)->first();
+
+        if (!$user) {
+            return redirect()->route('account.forgotPassword')->with('error', 'User not found.');
+        }
+
+        // Update password
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Delete the token
+        \DB::table('password_reset_tokens')->where('token', $request->token)->delete();
+
+        return redirect()->route('account.login')->with('success', 'Password reset successfully. You can now login with your new password.');
     }
 }

@@ -38,6 +38,10 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/job/{id}', [HomeController::class, 'jobDetails'])->name('job.details');
 Route::post('/apply-job', [JobsController::class, 'applyJob'])->name('applyJob');
+Route::get('/forgot-password', [AccountController::class, 'forgotPassword'])->name('account.forgotPassword');
+Route::post('/process-forgot-password', [AccountController::class, 'processForgotPassword'])->name('account.processForgotPassword');
+Route::get('/reset-password/{token}', [AccountController::class, 'resetPassword'])->name('account.resetPassword');
+Route::post('/reset-password', [AccountController::class, 'processResetPassword'])->name('account.processResetPassword');
 
 Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
