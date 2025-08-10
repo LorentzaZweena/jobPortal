@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/account/logout', [AccountController::class, 'logout'])->name('account.logout');
     Route::get('/create-job', [AccountController::class, 'createJob'])->name('account.createJob');
     Route::post('/save-job', [AccountController::class, 'saveJob'])->name('account.saveJob');
+    Route::post('/bookmark-job', [AccountController::class, 'bookmarkJob'])->name('account.bookmarkJob');
     Route::get('/my-jobs', [AccountController::class, 'myJobs'])->name('account.myJobs');
     Route::get('/my-jobs/edit/{jobId}', [AccountController::class, 'editJob'])->name('account.editJob');
     Route::post('/update-job/{jobId}', [AccountController::class, 'updateJob'])->name('account.updateJob');

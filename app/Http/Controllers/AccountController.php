@@ -364,18 +364,58 @@ class AccountController extends Controller
         ]);
     }
 
-    public function savedJobs(){
-        // $jobApplications = JobApplication::where('user_id', Auth::user()->id)
-        //                     ->with('job','job.jobType', 'job.applications')
-        //                     ->paginate(5);
+    // public function savedJobs(){
+    //     $savedJobs = SavedJob::where([
+    //         'user_id' => Auth::user()->id
+    //     ])->with('job','job.jobType', 'job.applications')->orderBy('created_at', 'DESC')->paginate(5);
+    //     return view('front.account.job.saved-jobs', [
+    //         'savedJobs' => $savedJobs
+    //     ]);
+    // }
 
-        $savedJobs = SavedJob::where([
-            'user_id' => Auth::user()->id
-        ])->with('job','job.jobType', 'job.applications')->orderBy('created_at', 'DESC')->paginate(5);
-        return view('front.account.job.saved-jobs', [
-            'savedJobs' => $savedJobs
+    public function bookmarkJob(Request $request) {
+    try {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer|exists:jobs,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid job ID'
+            ]);
+        }
+
+        $existing = SavedJob::where([
+            'user_id' => Auth::user()->id,
+            'job_id' => $request->id
+        ])->first();
+
+        if ($existing) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Job already saved'
+            ]);
+        }
+
+        $savedJob = new SavedJob();
+        $savedJob->user_id = Auth::user()->id;
+        $savedJob->job_id = $request->id;
+        $savedJob->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Job saved successfully'
+        ]);
+    } catch (\Exception $e) {
+        \Log::error($e->getMessage());
+        return response()->json([
+            'status' => false,
+            'message' => 'An error occurred while saving the job.'
         ]);
     }
+}
+
 
     public function removeSavedJob(Request $request){
         $savedJob = SavedJob::where([

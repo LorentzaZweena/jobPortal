@@ -36,7 +36,7 @@
                             </div>
                             <div class="jobs_right">
                                 <div class="apply_now {{ ($count == 1) ? 'save-job' : '' }}">
-                                    <a class="heart_mark" href="javascript:void(0);" onclick="saveJob({{ $job->id }})"> <i class="fa fa-heart-o" aria-hidden="true"></i></a>
+                                    <a class="heart_mark" href="javascript:void(0);" onclick="shareJob({{ $job->id }})"> <i class="fa fa-link" aria-hidden="true"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -72,12 +72,7 @@
                         
                         <div class="border-bottom"></div>
                         <div class="pt-3 text-end">
-                            @if (Auth::check())
-                                <button onclick="saveJob({{ $job->id }});" class="btn btn-danger">Save</button>
-                            @else
-                                <a href="{{ route('account.login') }}" class="btn btn-outline-danger">Login to save</a>
-                            @endif
-
+                            <button onclick="shareJob({{ $job->id }});" class="btn btn-danger">Share</button>
                             @if (Auth::check())
                                 <button type="button" onclick="applyJob({{ $job->id }})" class="btn btn-outline-danger">Apply Now</button>
                             @else
@@ -177,88 +172,96 @@
 @section('customJs')
 <script type="text/javascript">
 function applyJob(id) {
-    if(confirm('Are you sure you want to apply for this job?')) {
-        $.ajax({
-            url: '{{ route("applyJob") }}',
-            type: 'POST',
-            data: {
-                id: id,
-                _token: '{{ csrf_token() }}'
-            },
-            dataType: 'json',
-            success: function(response) {
-                $('.alert').remove();
-                let alertClass = response.status ? 'alert-success' : 'alert-danger';
-                let alertHtml = `
-                    <div class="alert ${alertClass} alert-dismissible fade show mb-5" role="alert">
-                        ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You are about to apply for this job.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, apply!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let progress = 0;
+            Swal.fire({
+                title: 'Applying...',
+                html: `
+                    <div style="width: 100%; background-color: #eee; height: 10px; border-radius: 5px; overflow: hidden;">
+                        <div id="progress-bar" style="width: 0%; height: 100%; background-color: #d33;"></div>
                     </div>
-                `;
-            
-                $('.job_details_header').before(alertHtml);
-                $('html, body').animate({scrollTop: 0}, 500);
-                if(response.status) {
-                    $('a[onclick*="applyJob"]').prop('disabled', true).text('Applied');
+                    <p style="margin-top:10px;">Please wait while we submit your application.</p>
+                `,
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    const bar = document.getElementById('progress-bar');
+                    const interval = setInterval(() => {
+                        progress += 5;
+                        if (progress > 95) progress = 95;
+                        bar.style.width = progress + '%';
+                    }, 200);
+
+                    $.ajax({
+                        url: '{{ route("applyJob") }}',
+                        type: 'POST',
+                        data: {
+                            id: id,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            clearInterval(interval);
+                            bar.style.width = '100%';
+                            setTimeout(() => {
+                                Swal.fire({
+                                    icon: response.status ? 'info' : 'info',
+                                    title: response.status ? 'Applied!' : 'Error',
+                                    text: response.message
+                                });
+                                if (response.status) {
+                                    $('button[onclick*="applyJob"]').prop('disabled', true).text('Applied');
+                                }
+                            }, 300);
+                        },
+                        error: function(xhr) {
+                            clearInterval(interval);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Something went wrong. Please try again.'
+                            });
+                        }
+                    });
                 }
-            },
-            error: function(xhr, status, error) {
-                console.log('Error:', xhr.responseText);
-                $('.alert').remove();
-                let alertHtml = `
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        Something went wrong. Please try again.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-                $('.job_details_header').before(alertHtml);
-                $('html, body').animate({scrollTop: 0}, 500);
-            }
-        });
-    }
+            });
+        }
+    });
 }
 
-function saveJob(id) {
-    if(confirm('Are you sure you want to save for this job?')) {
-        $.ajax({
-            url: '{{ route("account.saveJob") }}', 
-            type: 'POST',
-            data: {
-                id: id,
-                _token: '{{ csrf_token() }}'
-            },
-            dataType: 'json',
-            success: function(response) {
-                $('.alert').remove();
-                let alertClass = response.status ? 'alert-success' : 'alert-danger';
-                let alertHtml = `
-                    <div class="alert ${alertClass} alert-dismissible fade show mb-5" role="alert">
-                        ${response.message}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-            
-                $('.job_details_header').before(alertHtml);
-                $('html, body').animate({scrollTop: 0}, 500);
-                if(response.status) {
-                    $('button[onclick*="saveJob"]').prop('disabled', true).text('Saved');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.log('Error:', xhr.responseText);
-                $('.alert').remove();
-                let alertHtml = `
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        Something went wrong. Please try again.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                `;
-                $('.job_details_header').before(alertHtml);
-                $('html, body').animate({scrollTop: 0}, 500);
-            }
+
+
+function shareJob(id) {
+    const jobUrl = "{{ url('jobs') }}/" + id;
+
+    navigator.clipboard.writeText(jobUrl).then(() => {
+        Swal.fire({
+            icon: 'info',
+            title: 'Link copied!',
+            text: 'Job link has been copied to your clipboard.',
+            timer: 2000,
+            showConfirmButton: false
         });
-    }
+    }).catch(err => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Unable to copy the link. Please try again.'
+        });
+        console.error('Copy failed', err);
+    });
 }
+
+
 
 </script>
 @endsection
